@@ -6,6 +6,7 @@ import com.booking.models.Role;
 import com.booking.repositories.EmployeeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.*;
 
+@Validated
 @RestController
 public class RegistrationController {
     @Autowired
