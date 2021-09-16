@@ -1,14 +1,17 @@
 package com.booking.models;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.security.Timestamp;
-import java.util.Calendar;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 public class MeetingRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -17,14 +20,12 @@ public class MeetingRoom {
     private String title;
     private Integer numberOfSeats;
     private boolean hasInteractiveBoard;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Calendar workTimeWith;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Calendar workTimeBy;
+    private LocalDateTime workTimeWith;
+    private LocalDateTime workTimeBy;
     private boolean isWorking;
 
-    @ElementCollection(targetClass = TypeEvent.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "type_events", joinColumns = @JoinColumn(name = "meeting_room_id"))
-    @Enumerated(EnumType.STRING)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "meeting_type", joinColumns = @JoinColumn(name = "meeting_room_id"),
+            inverseJoinColumns = @JoinColumn(name = "type_event_id"))
     private Set<TypeEvent> typeEventSet;
 }

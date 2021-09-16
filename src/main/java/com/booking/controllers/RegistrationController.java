@@ -1,35 +1,41 @@
 package com.booking.controllers;
 
+import com.booking.advice.EmployeeExistHandler;
 import com.booking.models.Employee;
 import com.booking.models.Role;
 import com.booking.repositories.EmployeeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
+import javax.validation.Valid;
+import java.util.*;
 
-@Controller
+@RestController
 public class RegistrationController {
     @Autowired
     private EmployeeRepo employeeRepo;
 
-
-    @GetMapping("/registration")
-    public String registration() {
-        return "registration";
+    @GetMapping(value = "/registration")
+    public Employee registration(){
+        Employee employee = new Employee();
+        Set<Role> set = new HashSet<>(Collections.singletonList(Role.USER));
+        employee.setRoles(set);
+        return employee;
     }
-
-    @PostMapping("/registration")
-    public String addEmployee(Employee employee, Model model){
+    @PostMapping(value = "/registration")
+    public Employee addEmployee(@Valid Employee employee, BindingResult bindingResult) {
+//        if (bindingResult.hasErrors()){
+//            return ;
+//        }
         Employee employeeFromDb = employeeRepo.findByLogin(employee.getLogin());
-        if(employeeFromDb!=null){
-            model.addAttribute("message", "An employee for such a login already exists!");
-            return "registration";
+        if (employeeFromDb != null) {
+            throw new EmployeeExistHandler();
         }
         employeeRepo.save(employee);
-        return "redirect:/login";
+        return employee;
     }
+
 }
