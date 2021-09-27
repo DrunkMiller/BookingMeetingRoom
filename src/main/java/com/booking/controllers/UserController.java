@@ -2,6 +2,7 @@ package com.booking.controllers;
 
 import com.booking.models.User;
 import com.booking.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,12 @@ public class UserController {
         return ResponseEntity.ok(userService.findUserById(userId));
     }
 
+    @PostMapping("/registration")
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        User userNew = userService.createUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userNew);
+    }
+
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteUserById(@PathVariable(value = "id") Long userId) {
         Map<String, Boolean> mapResult = userService.deleteUserById(userId);
@@ -34,7 +41,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Map<String, Boolean>> updateUser(@PathVariable(value = "id") Long userId, User userNew) {
+    public ResponseEntity<Map<String, Boolean>> updateUser(@PathVariable(value = "id") Long userId, @RequestBody User userNew) {
         Map<String, Boolean> mapResult = userService.updateUser(userId, userNew);
         return ResponseEntity.ok(mapResult);
     }

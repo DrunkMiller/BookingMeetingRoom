@@ -43,14 +43,17 @@ public class TypeEventService {
         return map;
     }
 
-    public TypeEvent updateTypeEvent(Long typeEventId, TypeEvent typeEventDetails) {
+    public Map<String, Boolean> updateTypeEvent(Long typeEventId, TypeEvent typeEventDetails) {
         TypeEvent typeEvent = getEventById(typeEventId);
         TypeEvent typeEventDB = typeEventRepo.findByType(typeEventDetails.getType());
         if (typeEventDB == null) {
             typeEvent.setType(typeEventDetails.getType());
             typeEventRepo.save(typeEvent);
+
         } else throw new EntityAlreadyExistException("Event type '" + typeEventDetails.getType() + "' already exists");
-        return typeEvent;
+        Map<String, Boolean> map = new HashMap<>();
+        map.put("Event Update Successfully", Boolean.TRUE);
+        return map;
     }
 
 

@@ -2,19 +2,23 @@ package com.booking.controllers;
 
 import com.booking.models.MeetingRoom;
 import com.booking.service.MeetingRoomService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/meeting_room")
+@RequestMapping("/meeting_rooms")
 public class MeetingRoomController {
 
-    @Autowired
-    private MeetingRoomService meetingRoomService;
+    private final MeetingRoomService meetingRoomService;
+
+    public MeetingRoomController(MeetingRoomService meetingRoomService) {
+        this.meetingRoomService = meetingRoomService;
+    }
 
     @GetMapping()
     public List<MeetingRoom> getAllMeetingRoom() {
@@ -28,11 +32,12 @@ public class MeetingRoomController {
         return ResponseEntity.ok().body(meetingRoom);
     }
 
-    @PostMapping()
+    @PostMapping("/meet_room")
     public ResponseEntity<MeetingRoom> createMeetingRoom(@RequestBody MeetingRoom meetingRoom) {
         meetingRoomService.createMeetingRoom(meetingRoom);
-        return ResponseEntity.ok(meetingRoom);
+    return ResponseEntity.status(HttpStatus.CREATED).body(meetingRoom);
     }
+
 
     @DeleteMapping("{id}")
     public ResponseEntity<Map<String, Boolean>> deleteMeetingRoomById(@PathVariable(value = "id") Long meetingRoomId) {
@@ -42,10 +47,10 @@ public class MeetingRoomController {
 
 
     @PutMapping("{id}")
-    public ResponseEntity<MeetingRoom> updateMeetingRoom(@PathVariable(value = "id") Long meetingRoomId,
+    public ResponseEntity<Map<String, Boolean>> updateMeetingRoom(@PathVariable(value = "id") Long meetingRoomId,
                                                          @RequestBody MeetingRoom meetingRoom) {
-        MeetingRoom meetingRoomOld = meetingRoomService.updateMeetingRoom(meetingRoomId, meetingRoom);
-        return ResponseEntity.ok(meetingRoomOld);
+        Map<String, Boolean> map = meetingRoomService.updateMeetingRoom(meetingRoomId, meetingRoom);
+        return ResponseEntity.ok(map);
     }
 
 

@@ -1,5 +1,6 @@
 package com.booking.service;
 
+import com.booking.advice.EntityAlreadyExistException;
 import com.booking.advice.ResourceNotFoundException;
 import com.booking.models.User;
 import com.booking.repositories.UserRepo;
@@ -7,12 +8,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
+@Validated
 public class UserService implements UserDetailsService {
     private final UserRepo userRepo;
 
@@ -34,13 +38,22 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new ResourceNotFoundException("An employee with ID " + userId + " not found"));
     }
 
-    public Map<String, Boolean> updateUser(Long userId, User userNew) {
+    public User createUser(@Valid User user) {
+        if (!hasUserByLogin(user.getLogin())) {
+            userRepo.save(user);
+        }
+        return user;
+    }
+
+    public Map<String, Boolean> updateUser(Long userId, @Valid User userNew) {
         User userOld = findUserById(userId);
-        userOld.setFirstname(userNew.getFirstname());
-        userOld.setSecondname(userNew.getSecondname());
-        userOld.setPassword(userNew.getPassword());
-        userOld.setRoles(userNew.getRoles());
-        userRepo.save(userOld);
+        if (userOld.getLogin().equals(userNew.getLogin()) || hasUserByLogin(userNew.getLogin())) {
+            userOld.setFirstname(userNew.getFirstname());
+            userOld.setSecondname(userNew.getSecondname());
+            userOld.setPassword(userNew.getPassword());
+            userOld.setRoles(userNew.getRoles());
+            userRepo.save(userOld);
+        }
         Map<String, Boolean> map = new HashMap<>();
         map.put("User parameters updated successfully", Boolean.TRUE);
         return map;
@@ -56,5 +69,13 @@ public class UserService implements UserDetailsService {
 
     public List<User> getAllUsers() {
         return userRepo.findAll();
+    }
+
+    private boolean hasUserByLogin(String login) {
+        User userFromDb = userRepo.findByLogin(login);
+        if (userFromDb != null) {
+            throw new EntityAlreadyExistException("An employee with this login: '" + login + "' already exist!");
+        }
+        return true;
     }
 }

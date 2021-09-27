@@ -1,24 +1,25 @@
 package com.booking.advice;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
+import java.util.Collections;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApiError {
-    private String message;
-    private String debugMessage;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private HttpStatus status;
+    private String message;
     private List<String> errors;
 
-    public ApiError(String message, String debugMessage){
+    public ApiError(HttpStatus status, String message, String error) {
+        this.status = status;
         this.message = message;
-        this.debugMessage = debugMessage;
+        errors = Collections.singletonList(error);
     }
 }

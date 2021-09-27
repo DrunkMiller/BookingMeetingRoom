@@ -3,12 +3,12 @@ package com.booking.models;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import javax.validation.Valid;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.Set;
@@ -22,9 +22,14 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @NotNull(message = "Should not be null")
+    @NotEmpty(message = "Should not be empty")
     private String firstname;
+    @NotNull(message = "should not be null")
+    @NotEmpty(message = "should not be empty")
     private String secondname;
     private String login;
+    @Size(min = 3, message = "Too short password!")
     private String password;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)

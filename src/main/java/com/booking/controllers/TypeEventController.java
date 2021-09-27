@@ -2,7 +2,7 @@ package com.booking.controllers;
 
 import com.booking.models.TypeEvent;
 import com.booking.service.TypeEventService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,8 +12,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/types")
 public class TypeEventController {
-    @Autowired
-    private TypeEventService typeEventService;
+    private final TypeEventService typeEventService;
+
+    public TypeEventController(TypeEventService typeEventService) {
+        this.typeEventService = typeEventService;
+    }
 
     @GetMapping(value = "")
     public List<TypeEvent> getAllEvents() {
@@ -28,7 +31,7 @@ public class TypeEventController {
     @PostMapping("/type")
     public ResponseEntity<TypeEvent> createEvent(@RequestBody TypeEvent event) {
         TypeEvent typeEvent = typeEventService.createEvent(event);
-        return ResponseEntity.ok().body(typeEvent);
+        return ResponseEntity.status(HttpStatus.CREATED).body(typeEvent);
     }
 
     @DeleteMapping("{id}")
@@ -38,10 +41,10 @@ public class TypeEventController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<TypeEvent> updateTypeEvent(@PathVariable(value = "id") Long typeEventId,
+    public ResponseEntity<Map<String, Boolean>> updateTypeEvent(@PathVariable(value = "id") Long typeEventId,
                                                      @RequestBody TypeEvent typeEventDetails) {
-        TypeEvent typeEvent = typeEventService.updateTypeEvent(typeEventId, typeEventDetails);
-        return ResponseEntity.ok(typeEvent);
+        Map<String, Boolean> map = typeEventService.updateTypeEvent(typeEventId, typeEventDetails);
+        return ResponseEntity.ok(map);
     }
 
 

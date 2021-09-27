@@ -1,12 +1,13 @@
 package com.booking.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.time.LocalTime;
 import java.util.Set;
 
 @Entity
@@ -22,13 +23,13 @@ public class MeetingRoom {
     private String description;
     private Integer numberOfSeats;
     private boolean interactiveBoard;
-//    @DateTimeFormat(iso =DateTimeFormat.ISO.DATE_TIME)
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime workTimeWith;
-//    @DateTimeFormat(iso =DateTimeFormat.ISO.DATE_TIME)
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime workTimeBy;
-    private boolean working;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+    @Column(columnDefinition = "TIME")
+    private LocalTime workTimeWith;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+    @Column(columnDefinition = "TIME")
+    private LocalTime workTimeBy;
+    private boolean working = true;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "meeting_type", joinColumns = @JoinColumn(name = "meeting_room_id"),
@@ -36,14 +37,4 @@ public class MeetingRoom {
     private Set<TypeEvent> typeEventSet;
 
 
-    public MeetingRoom(String title, String description, Integer numberOfSeats, boolean interactiveBoard, LocalDateTime workTimeWith, LocalDateTime workTimeBy, boolean working, Set<TypeEvent> typeEventSet) {
-        this.title = title;
-        this.description = description;
-        this.numberOfSeats = numberOfSeats;
-        this.interactiveBoard = interactiveBoard;
-        this.workTimeWith = workTimeWith;
-        this.workTimeBy = workTimeBy;
-        this.working = working;
-        this.typeEventSet = typeEventSet;
-    }
 }
