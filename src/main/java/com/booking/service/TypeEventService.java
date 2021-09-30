@@ -27,7 +27,7 @@ public class TypeEventService {
                 .orElseThrow(() -> new ResourceNotFoundException("Type event with ID number '" + eventId + "' does not exist"));
     }
 
-    public TypeEvent createEvent(TypeEvent event) {
+    public TypeEvent createEvent(TypeEvent event){
         TypeEvent typeEvent = typeEventRepo.findByType(event.getType());
         if (typeEvent == null) {
             typeEventRepo.save(event);
@@ -35,7 +35,7 @@ public class TypeEventService {
         return event;
     }
 
-    public Map<String, Boolean> deleteTypeEvent(Long typeEventId) {
+    public Map<String, Boolean> deleteTypeEventById(Long typeEventId) {
         TypeEvent typeEvent = getEventById(typeEventId);
         typeEventRepo.delete(typeEvent);
         Map<String, Boolean> map = new HashMap<>();

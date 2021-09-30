@@ -25,7 +25,7 @@ public class UserController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<User> getUserById(@PathVariable(value = "id") Long userId) {
-        return ResponseEntity.ok(userService.findUserById(userId));
+        return ResponseEntity.ok(userService.getUserById(userId));
     }
 
     @PostMapping("/registration")

@@ -32,24 +32,28 @@ public class UserService implements UserDetailsService {
         }
         return user;
     }
+    public List<User> getAllUsers() {
+        return userRepo.findAll();
+    }
 
-    public User findUserById(Long userId) {
+    public User getUserById(Long userId) {
         return userRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("An employee with ID " + userId + " not found"));
     }
 
     public User createUser(@Valid User user) {
-        if (!hasUserByLogin(user.getLogin())) {
+        if (hasUserByLogin(user.getLogin())) {
             userRepo.save(user);
         }
         return user;
     }
 
     public Map<String, Boolean> updateUser(Long userId, @Valid User userNew) {
-        User userOld = findUserById(userId);
+        User userOld = getUserById(userId);
         if (userOld.getLogin().equals(userNew.getLogin()) || hasUserByLogin(userNew.getLogin())) {
             userOld.setFirstname(userNew.getFirstname());
             userOld.setSecondname(userNew.getSecondname());
+            userOld.setLogin(userNew.getLogin());
             userOld.setPassword(userNew.getPassword());
             userOld.setRoles(userNew.getRoles());
             userRepo.save(userOld);
@@ -60,15 +64,11 @@ public class UserService implements UserDetailsService {
     }
 
     public Map<String, Boolean> deleteUserById(Long userId) {
-        User user = findUserById(userId);
+        User user = getUserById(userId);
         userRepo.delete(user);
         Map<String, Boolean> map = new HashMap<>();
         map.put("User Deleted Successfully", Boolean.TRUE);
         return map;
-    }
-
-    public List<User> getAllUsers() {
-        return userRepo.findAll();
     }
 
     private boolean hasUserByLogin(String login) {

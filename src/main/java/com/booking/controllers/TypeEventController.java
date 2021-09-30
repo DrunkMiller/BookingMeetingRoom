@@ -36,7 +36,7 @@ public class TypeEventController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<Map<String, Boolean>> deleteTypeEvent(@PathVariable(value = "id") Long typeEventId) {
-        Map<String, Boolean> mapResult = typeEventService.deleteTypeEvent(typeEventId);
+        Map<String, Boolean> mapResult = typeEventService.deleteTypeEventById(typeEventId);
         return ResponseEntity.ok(mapResult);
     }
 
