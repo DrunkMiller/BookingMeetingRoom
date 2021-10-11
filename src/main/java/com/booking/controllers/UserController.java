@@ -1,9 +1,15 @@
 package com.booking.controllers;
 
+import com.booking.models.Role;
 import com.booking.models.User;
 import com.booking.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,14 +24,17 @@ public class UserController {
         this.userService = userService;
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping()
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable(value = "id") Long userId) {
-        return ResponseEntity.ok(userService.getUserById(userId));
+    public ResponseEntity<?> getUserById(@PathVariable(value = "id") Long userId, Authentication currentUser) {
+        if (methodAccess(currentUser, userId))
+            return ResponseEntity.ok(userService.getUserById(userId));
+        else return ResponseEntity.status( HttpStatus.FORBIDDEN).build();
     }
 
     @PostMapping("/registration")
@@ -35,15 +44,27 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Map<String, Boolean>> deleteUserById(@PathVariable(value = "id") Long userId) {
-        Map<String, Boolean> mapResult = userService.deleteUserById(userId);
-        return ResponseEntity.ok(mapResult);
+    public ResponseEntity<?> deleteUserById(@PathVariable(value = "id") Long userId, Authentication currentUser) {
+        if (methodAccess(currentUser, userId)) {
+            userService.deleteUserById(userId);
+            return ResponseEntity.ok().build();
+        }
+        else return ResponseEntity.status( HttpStatus.FORBIDDEN).build();
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Map<String, Boolean>> updateUser(@PathVariable(value = "id") Long userId, @RequestBody User userNew) {
-        Map<String, Boolean> mapResult = userService.updateUser(userId, userNew);
-        return ResponseEntity.ok(mapResult);
+    public ResponseEntity<?> updateUser(@PathVariable(value = "id") Long userId, @RequestBody User userNew, Authentication currentUser) {
+        if (methodAccess(currentUser, userId)) {
+            userService.updateUser(userId, userNew);
+            return ResponseEntity.ok().build();
+        }
+        else return ResponseEntity.status( HttpStatus.FORBIDDEN).build();
+    }
+
+    private boolean methodAccess(Authentication currentUser, Long userId){
+        User user= userService.getByUsername(currentUser.getName());
+        boolean hasRoleAdmin = user.getRoles().stream().anyMatch(s -> s.getName().equals("ROLE_ADMIN"));
+        return hasRoleAdmin || userId.equals(user.getId());
     }
 
 }

@@ -4,6 +4,7 @@ import com.booking.models.TypeEvent;
 import com.booking.service.TypeEventService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,20 +30,23 @@ public class TypeEventController {
     }
 
     @PostMapping("/type")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<TypeEvent> createEvent(@RequestBody TypeEvent event) {
         TypeEvent typeEvent = typeEventService.createEvent(event);
         return ResponseEntity.status(HttpStatus.CREATED).body(typeEvent);
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Map<String, Boolean>> deleteTypeEvent(@PathVariable(value = "id") Long typeEventId) {
         Map<String, Boolean> mapResult = typeEventService.deleteTypeEventById(typeEventId);
         return ResponseEntity.ok(mapResult);
     }
 
     @PutMapping("{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Map<String, Boolean>> updateTypeEvent(@PathVariable(value = "id") Long typeEventId,
-                                                     @RequestBody TypeEvent typeEventDetails) {
+                                                                @RequestBody TypeEvent typeEventDetails) {
         Map<String, Boolean> map = typeEventService.updateTypeEvent(typeEventId, typeEventDetails);
         return ResponseEntity.ok(map);
     }

@@ -2,6 +2,7 @@ package com.booking.service;
 
 import com.booking.advice.EntityAlreadyExistException;
 import com.booking.advice.ResourceNotFoundException;
+import com.booking.models.Status;
 import com.booking.models.User;
 import com.booking.repositories.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,15 +46,19 @@ public class UserService {
 
     public User createUser(@Valid User user) {
         if (hasUserByLogin(user.getUsername())) {
+            user.setCreated(LocalDate.now());
+            user.setStatus(Status.ACTIVE);
+            user.setUpdated(LocalDate.now());
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepo.save(user);
         }
         return user;
     }
 
-    public Map<String, Boolean> updateUser(Long userId, @Valid User userNew) {
+    public void updateUser(Long userId, @Valid User userNew) {
         User userOld = getUserById(userId);
         if (userOld.getUsername().equals(userNew.getUsername()) || hasUserByLogin(userNew.getUsername())) {
+            userOld.setUpdated(LocalDate.now());
             userOld.setFirstName(userNew.getFirstName());
             userOld.setLastName(userNew.getLastName());
             userOld.setUsername(userNew.getUsername());
@@ -60,17 +66,11 @@ public class UserService {
             userOld.setRoles(userNew.getRoles());
             userRepo.save(userOld);
         }
-        Map<String, Boolean> map = new HashMap<>();
-        map.put("User parameters updated successfully", Boolean.TRUE);
-        return map;
     }
 
-    public Map<String, Boolean> deleteUserById(Long userId) {
+    public void deleteUserById(Long userId) {
         User user = getUserById(userId);
         userRepo.delete(user);
-        Map<String, Boolean> map = new HashMap<>();
-        map.put("User Deleted Successfully", Boolean.TRUE);
-        return map;
     }
 
     private boolean hasUserByLogin(String login) {

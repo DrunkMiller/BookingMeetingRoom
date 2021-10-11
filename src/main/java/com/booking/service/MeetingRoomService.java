@@ -34,16 +34,14 @@ public class MeetingRoomService {
         meetingRoomRepo.save(meetingRoom);
     }
 
-    public Map<String, Boolean> deleteMeetingRoomById(Long meetingRoomId) {
+    public void deleteMeetingRoomById(Long meetingRoomId) {
         MeetingRoom meetingRoom = getMeetingRoomById(meetingRoomId);
         meetingRoomRepo.delete(meetingRoom);
-        Map<String, Boolean> map = new HashMap<>();
-        map.put("Meeting Room Deleted Successfully", Boolean.TRUE);
-        return map;
+
     }
 
 
-    public Map<String, Boolean> updateMeetingRoom(Long meetingRoomId, MeetingRoom meetingRoom) {
+    public void updateMeetingRoom(Long meetingRoomId, MeetingRoom meetingRoom) {
         MeetingRoom meetingRoomOld = meetingRoomRepo.findById(meetingRoomId)
                 .orElseThrow(() -> new ResourceNotFoundException("Meeting room with ID number " + meetingRoomId + " does not exist"));
         checkStartBeforeAfter(meetingRoom.getWorkTimeWith(), meetingRoom.getWorkTimeBy());
@@ -56,9 +54,7 @@ public class MeetingRoomService {
         meetingRoomOld.setWorking(meetingRoom.isWorking());
         meetingRoomOld.setTypeEventSet(meetingRoom.getTypeEventSet());
         meetingRoomRepo.save(meetingRoomOld);
-        Map<String, Boolean> map = new HashMap<>();
-        map.put("Meeting Room Update Successfully", Boolean.TRUE);
-        return map;
+
     }
 
     private void checkStartBeforeAfter(LocalTime startTime, LocalTime finishTime) {

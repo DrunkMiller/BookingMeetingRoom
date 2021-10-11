@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -35,22 +34,22 @@ public class MeetingRoomController {
     @PostMapping("/meet_room")
     public ResponseEntity<MeetingRoom> createMeetingRoom(@RequestBody MeetingRoom meetingRoom) {
         meetingRoomService.createMeetingRoom(meetingRoom);
-    return ResponseEntity.status(HttpStatus.CREATED).body(meetingRoom);
+        return ResponseEntity.status(HttpStatus.CREATED).body(meetingRoom);
     }
 
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Map<String, Boolean>> deleteMeetingRoomById(@PathVariable(value = "id") Long meetingRoomId) {
-        Map<String, Boolean> map = meetingRoomService.deleteMeetingRoomById(meetingRoomId);
-        return ResponseEntity.ok(map);
+    public ResponseEntity<?> deleteMeetingRoomById(@PathVariable(value = "id") Long meetingRoomId) {
+        meetingRoomService.deleteMeetingRoomById(meetingRoomId);
+        return ResponseEntity.ok().build();
     }
 
 
     @PutMapping("{id}")
-    public ResponseEntity<Map<String, Boolean>> updateMeetingRoom(@PathVariable(value = "id") Long meetingRoomId,
-                                                         @RequestBody MeetingRoom meetingRoom) {
-        Map<String, Boolean> map = meetingRoomService.updateMeetingRoom(meetingRoomId, meetingRoom);
-        return ResponseEntity.ok(map);
+    public ResponseEntity<?> updateMeetingRoom(@PathVariable(value = "id") Long meetingRoomId,
+                                                                  @RequestBody MeetingRoom meetingRoom) {
+        meetingRoomService.updateMeetingRoom(meetingRoomId, meetingRoom);
+        return ResponseEntity.ok().build();
     }
 
 
