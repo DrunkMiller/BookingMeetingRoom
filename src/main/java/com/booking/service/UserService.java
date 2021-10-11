@@ -4,9 +4,8 @@ import com.booking.advice.EntityAlreadyExistException;
 import com.booking.advice.ResourceNotFoundException;
 import com.booking.models.User;
 import com.booking.repositories.UserRepo;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -17,21 +16,23 @@ import java.util.Map;
 
 @Service
 @Validated
-public class UserService implements UserDetailsService {
+public class UserService {
     private final UserRepo userRepo;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepo userRepo) {
+    public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        User user = userRepo.findByLogin(login);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
+    public User getByUsername(String username){
+        User userFromDb = userRepo.findByUsername(username);
+        if (userFromDb == null) {
+            throw new ResourceNotFoundException("An employee with this login: '" + username + "' not found");
         }
-        return user;
+        return userFromDb;
     }
+
     public List<User> getAllUsers() {
         return userRepo.findAll();
     }
@@ -42,7 +43,8 @@ public class UserService implements UserDetailsService {
     }
 
     public User createUser(@Valid User user) {
-        if (hasUserByLogin(user.getLogin())) {
+        if (hasUserByLogin(user.getUsername())) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepo.save(user);
         }
         return user;
@@ -50,11 +52,11 @@ public class UserService implements UserDetailsService {
 
     public Map<String, Boolean> updateUser(Long userId, @Valid User userNew) {
         User userOld = getUserById(userId);
-        if (userOld.getLogin().equals(userNew.getLogin()) || hasUserByLogin(userNew.getLogin())) {
-            userOld.setFirstname(userNew.getFirstname());
-            userOld.setSecondname(userNew.getSecondname());
-            userOld.setLogin(userNew.getLogin());
-            userOld.setPassword(userNew.getPassword());
+        if (userOld.getUsername().equals(userNew.getUsername()) || hasUserByLogin(userNew.getUsername())) {
+            userOld.setFirstName(userNew.getFirstName());
+            userOld.setLastName(userNew.getLastName());
+            userOld.setUsername(userNew.getUsername());
+            userOld.setPassword(passwordEncoder.encode(userNew.getPassword()));
             userOld.setRoles(userNew.getRoles());
             userRepo.save(userOld);
         }
@@ -72,7 +74,7 @@ public class UserService implements UserDetailsService {
     }
 
     private boolean hasUserByLogin(String login) {
-        User userFromDb = userRepo.findByLogin(login);
+        User userFromDb = userRepo.findByUsername(login);
         if (userFromDb != null) {
             throw new EntityAlreadyExistException("An employee with this login: '" + login + "' already exist!");
         }

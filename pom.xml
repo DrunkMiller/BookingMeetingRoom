@@ -14,6 +14,10 @@
         <version>2.5.4</version>
     </parent>
 
+    <properties>
+        <jsonwebtoken.version>0.8.0</jsonwebtoken.version>
+    </properties>
+
 
     <dependencies>
         <dependency>
@@ -48,6 +52,12 @@
             <artifactId>lombok</artifactId>
             <version>1.18.20</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>${jsonwebtoken.version}</version>
         </dependency>
 
         <dependency>
