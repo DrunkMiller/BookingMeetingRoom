@@ -4,10 +4,11 @@ import com.booking.models.Booking;
 import com.booking.service.BookingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/bookings")
@@ -28,20 +29,23 @@ public class BookingController {
         return ResponseEntity.ok().body(bookingService.getBookingById(bookingId));
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_LECTOR"})
     @PostMapping("/booking")
-    public ResponseEntity<Booking> createBooking(@RequestBody Booking booking) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.createBooking(booking));
+    public ResponseEntity<Booking> createBooking(@RequestBody Booking booking, Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.createBooking(booking, authentication));
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_LECTOR"})
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Boolean>> updateBooking(@PathVariable(value = "id") Long bookingId, @RequestBody Booking booking) {
-        return ResponseEntity.ok(bookingService.updateBooking(bookingId, booking));
+    public ResponseEntity<Booking> updateBooking(@PathVariable(value = "id") Long bookingId, @RequestBody Booking booking, Authentication authentication) {
+        return ResponseEntity.ok().body(bookingService.updateBooking(bookingId, booking,authentication));
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_LECTOR"})
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, Boolean>> deleteBooking(@PathVariable(value = "id") Long bookingId) {
-        Map<String, Boolean> map = bookingService.deleteBookingById(bookingId);
-        return ResponseEntity.ok(map);
+    public ResponseEntity<?> deleteBooking(@PathVariable(value = "id") Long bookingId, Authentication authentication) {
+        bookingService.deleteBookingById(bookingId, authentication);
+        return ResponseEntity.ok().build();
     }
 
 

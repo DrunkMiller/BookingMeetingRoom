@@ -41,7 +41,7 @@ public class MeetingRoomService {
     }
 
 
-    public void updateMeetingRoom(Long meetingRoomId, MeetingRoom meetingRoom) {
+    public MeetingRoom updateMeetingRoom(Long meetingRoomId, MeetingRoom meetingRoom) {
         MeetingRoom meetingRoomOld = meetingRoomRepo.findById(meetingRoomId)
                 .orElseThrow(() -> new ResourceNotFoundException("Meeting room with ID number " + meetingRoomId + " does not exist"));
         checkStartBeforeAfter(meetingRoom.getWorkTimeWith(), meetingRoom.getWorkTimeBy());
@@ -54,6 +54,7 @@ public class MeetingRoomService {
         meetingRoomOld.setWorking(meetingRoom.isWorking());
         meetingRoomOld.setTypeEventSet(meetingRoom.getTypeEventSet());
         meetingRoomRepo.save(meetingRoomOld);
+        return meetingRoomOld;
 
     }
 

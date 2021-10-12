@@ -1,19 +1,14 @@
 package com.booking.controllers;
 
-import com.booking.models.Role;
 import com.booking.models.User;
 import com.booking.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
-
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -34,7 +29,7 @@ public class UserController {
     public ResponseEntity<?> getUserById(@PathVariable(value = "id") Long userId, Authentication currentUser) {
         if (methodAccess(currentUser, userId))
             return ResponseEntity.ok(userService.getUserById(userId));
-        else return ResponseEntity.status( HttpStatus.FORBIDDEN).build();
+        else return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @PostMapping("/registration")
@@ -48,8 +43,7 @@ public class UserController {
         if (methodAccess(currentUser, userId)) {
             userService.deleteUserById(userId);
             return ResponseEntity.ok().build();
-        }
-        else return ResponseEntity.status( HttpStatus.FORBIDDEN).build();
+        } else return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @PatchMapping("/{id}")
@@ -57,12 +51,11 @@ public class UserController {
         if (methodAccess(currentUser, userId)) {
             userService.updateUser(userId, userNew);
             return ResponseEntity.ok().build();
-        }
-        else return ResponseEntity.status( HttpStatus.FORBIDDEN).build();
+        } else return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    private boolean methodAccess(Authentication currentUser, Long userId){
-        User user= userService.getByUsername(currentUser.getName());
+    private boolean methodAccess(Authentication currentUser, Long userId) {
+        User user = userService.getByUsername(currentUser.getName());
         boolean hasRoleAdmin = user.getRoles().stream().anyMatch(s -> s.getName().equals("ROLE_ADMIN"));
         return hasRoleAdmin || userId.equals(user.getId());
     }

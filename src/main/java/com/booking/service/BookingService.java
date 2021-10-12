@@ -5,23 +5,29 @@ import com.booking.advice.ResourceNotFoundException;
 import com.booking.models.Booking;
 import com.booking.models.MeetingRoom;
 import com.booking.models.TypeEvent;
+import com.booking.models.User;
 import com.booking.repositories.BookingRepo;
+import com.booking.repositories.UserRepo;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 
 public class BookingService {
     private final BookingRepo bookingRepo;
+    private  final UserRepo userRepo;
 
-    public BookingService(BookingRepo bookingRepo) {
+    public BookingService(BookingRepo bookingRepo, UserRepo userRepo) {
         this.bookingRepo = bookingRepo;
+        this.userRepo = userRepo;
     }
 
     public List<Booking> getBookingsFromPreviousDay() {
@@ -32,38 +38,39 @@ public class BookingService {
         return bookingRepo.findById(bookingId).orElseThrow(() -> new ResourceNotFoundException("Booking with ID " + bookingId + " doesn't exist."));
     }
 
-    public Booking createBooking(Booking booking) {
+    public Booking createBooking(Booking booking, Authentication authentication) {
         if (allChecks(booking)) {
+            booking.setEmployee(userRepo.findByUsername(authentication.getName()));
             bookingRepo.save(booking);
         }
         return booking;
     }
-
-    public Map<String, Boolean> updateBooking(Long bookingId, Booking booking) {
-        Booking bookingOld = bookingRepo.findById(bookingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Booking with ID number " + bookingId + " does not exist"));
-        bookingOld.setTitle(booking.getTitle());
-        bookingOld.setEmployee(booking.getEmployee());
-        bookingOld.setStartTime(booking.getStartTime());
-        bookingOld.setFinishTime(booking.getFinishTime());
-        bookingOld.setMeetingRoom(booking.getMeetingRoom());
-        bookingOld.setTypeEvent(booking.getTypeEvent());
-        if (allChecks(bookingOld)) {
-            bookingRepo.save(bookingOld);
-
+    public Booking updateBooking(Long bookingId, Booking booking,  Authentication authentication) {
+        Booking bookingOld =getBookingById(bookingId);
+        if (bookingOld.getEmployee().getUsername().equals(authentication.getName())) {
+            bookingOld.setTitle(booking.getTitle());
+            bookingOld.setEmployee(userRepo.findByUsername(authentication.getName()));
+            bookingOld.setStartTime(booking.getStartTime());
+            bookingOld.setFinishTime(booking.getFinishTime());
+            bookingOld.setMeetingRoom(booking.getMeetingRoom());
+            bookingOld.setTypeEvent(booking.getTypeEvent());
+            if (allChecks(bookingOld)) {
+                bookingRepo.save(bookingOld);
+            }
         }
-        Map<java.lang.String, java.lang.Boolean> map = new HashMap<>();
-        map.put("Booking Update Successfully", java.lang.Boolean.TRUE);
-        return map;
+        else throw new AccessDeniedException("You cannot change this booking.");
+        return bookingOld;
     }
 
-    public Map<String, Boolean> deleteBookingById(Long bookingId) {
+    public void deleteBookingById(Long bookingId, Authentication authentication) {
+        boolean hasRoleAdmin =authentication.getAuthorities().stream().anyMatch(s -> s.getAuthority().equals("ROLE_ADMIN"));
         Booking booking = getBookingById(bookingId);
-        bookingRepo.delete(booking);
-        Map<java.lang.String, java.lang.Boolean> map = new HashMap<>();
-        map.put("Booking Deleted Successfully", java.lang.Boolean.TRUE);
-        return map;
+        if (booking.getEmployee().getUsername().equals(authentication.getName()) || hasRoleAdmin) {
+            bookingRepo.delete(booking);
+            }
+        else throw new AccessDeniedException("You cannot change this booking.");
     }
+
 
     private boolean allChecks(Booking booking) {
         isMeetingRoomWorking(booking.getMeetingRoom());//работает ли комната

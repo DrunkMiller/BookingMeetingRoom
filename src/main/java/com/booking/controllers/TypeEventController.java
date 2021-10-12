@@ -8,7 +8,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/types")
@@ -38,17 +37,17 @@ public class TypeEventController {
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Map<String, Boolean>> deleteTypeEvent(@PathVariable(value = "id") Long typeEventId) {
-        Map<String, Boolean> mapResult = typeEventService.deleteTypeEventById(typeEventId);
-        return ResponseEntity.ok(mapResult);
+    public ResponseEntity<?> deleteTypeEvent(@PathVariable(value = "id") Long typeEventId) {
+        typeEventService.deleteTypeEventById(typeEventId);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Map<String, Boolean>> updateTypeEvent(@PathVariable(value = "id") Long typeEventId,
-                                                                @RequestBody TypeEvent typeEventDetails) {
-        Map<String, Boolean> map = typeEventService.updateTypeEvent(typeEventId, typeEventDetails);
-        return ResponseEntity.ok(map);
+    public ResponseEntity<TypeEvent> updateTypeEvent(@PathVariable(value = "id") Long typeEventId,
+                                                     @RequestBody TypeEvent typeEventDetails) {
+        TypeEvent updateEvent = typeEventService.updateTypeEvent(typeEventId, typeEventDetails);
+        return ResponseEntity.ok(updateEvent);
     }
 
 
