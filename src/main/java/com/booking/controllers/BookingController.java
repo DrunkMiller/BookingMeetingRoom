@@ -2,6 +2,7 @@ package com.booking.controllers;
 
 import com.booking.models.Booking;
 import com.booking.service.BookingService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/bookings")
+@Slf4j
 public class BookingController {
     private final BookingService bookingService;
 
@@ -32,6 +34,7 @@ public class BookingController {
     @Secured({"ROLE_ADMIN", "ROLE_LECTOR"})
     @PostMapping("/booking")
     public ResponseEntity<Booking> createBooking(@RequestBody Booking booking, Authentication authentication) {
+        log.info("Create new Booking");
         return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.createBooking(booking, authentication));
     }
 

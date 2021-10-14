@@ -15,12 +15,11 @@ import java.util.List;
 @Getter
 @Setter
 public class User extends BaseUserEntity {
-
     @NotNull(message = "Should not be null")
     @NotEmpty(message = "Should not be empty")
     private String firstName;
-    @NotNull(message = "should not be null")
-    @NotEmpty(message = "should not be empty")
+    @NotNull(message = "Should not be null")
+    @NotEmpty(message = "Should not be empty")
     private String lastName;
     private String username;
     @Size(min = 3, message = "Too short password!")
