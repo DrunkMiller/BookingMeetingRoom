@@ -10,9 +10,9 @@ import org.springframework.data.annotation.LastModifiedBy;
 import javax.persistence.*;
 import java.time.LocalDate;
 
-@MappedSuperclass
 @Getter
 @Setter
+@MappedSuperclass
 public class BaseUserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

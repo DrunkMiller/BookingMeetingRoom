@@ -6,9 +6,7 @@ import com.booking.models.TypeEvent;
 import com.booking.repositories.TypeEventRepo;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class TypeEventService {
@@ -27,7 +25,7 @@ public class TypeEventService {
                 .orElseThrow(() -> new ResourceNotFoundException("Type event with ID number '" + eventId + "' does not exist"));
     }
 
-    public TypeEvent createEvent(TypeEvent event){
+    public TypeEvent createEvent(TypeEvent event) {
         TypeEvent typeEvent = typeEventRepo.findByType(event.getType());
         if (typeEvent == null) {
             typeEventRepo.save(event);
@@ -35,12 +33,9 @@ public class TypeEventService {
         return event;
     }
 
-    public Map<String, Boolean> deleteTypeEventById(Long typeEventId) {
+    public void deleteTypeEventById(Long typeEventId) {
         TypeEvent typeEvent = getEventById(typeEventId);
         typeEventRepo.delete(typeEvent);
-        Map<String, Boolean> map = new HashMap<>();
-        map.put("Event Deleted Successfully", Boolean.TRUE);
-        return map;
     }
 
     public TypeEvent updateTypeEvent(Long typeEventId, TypeEvent typeEventDetails) {

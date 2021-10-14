@@ -1,7 +1,9 @@
 package com.booking.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -19,12 +21,6 @@ public class TypeEvent {
     @ManyToMany(mappedBy = "typeEventSet")
     @JsonIgnore
     private Set<MeetingRoom> meetingRoomSet;
-
-    public TypeEvent(Long id, String type) {
-        this.id = id;
-        this.type =type;
-    }
-
 
     @Override
     public boolean equals(Object o) {

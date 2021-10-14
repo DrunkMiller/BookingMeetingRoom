@@ -20,7 +20,6 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Service
-
 public class BookingService {
     private final BookingRepo bookingRepo;
     private  final UserRepo userRepo;

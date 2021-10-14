@@ -5,6 +5,7 @@ import com.booking.dto.AuthenticationUserTokenDto;
 import com.booking.models.User;
 import com.booking.security.jwt.JwtTokenProvider;
 import com.booking.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/login")
 public class AuthenticationController {
@@ -31,11 +33,13 @@ public class AuthenticationController {
     @PostMapping("")
     public ResponseEntity<AuthenticationUserTokenDto> login(@RequestBody AuthenticationRequestDto requestDto) {
         String username = requestDto.getUsername();
+        log.info("The user with the login \"{}\" starts authentication.", requestDto.getUsername());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 username, requestDto.getPassword()));
         User user = userService.getByUsername(username);
         String token = jwtTokenProvider.createToken(username, user.getRoles());
         AuthenticationUserTokenDto response = new AuthenticationUserTokenDto(username, token);
+        log.info("The user with the login \"{}\" successfully authenticated.", requestDto.getUsername());
         return ResponseEntity.ok(response);
     }
 }

@@ -5,16 +5,13 @@ import com.booking.advice.ResourceNotFoundException;
 import com.booking.models.Status;
 import com.booking.models.User;
 import com.booking.repositories.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Validated
@@ -27,7 +24,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User getByUsername(String username){
+    public User getByUsername(String username) {
         User userFromDb = userRepo.findByUsername(username);
         if (userFromDb == null) {
             throw new ResourceNotFoundException("An employee with this login: '" + username + "' not found");

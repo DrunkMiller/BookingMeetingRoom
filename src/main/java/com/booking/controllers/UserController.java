@@ -2,6 +2,7 @@ package com.booking.controllers;
 
 import com.booking.models.User;
 import com.booking.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -35,6 +37,7 @@ public class UserController {
     @PostMapping("/registration")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User userNew = userService.createUser(user);
+        log.info("User with username \"{}\" created", userNew.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).body(userNew);
     }
 
@@ -42,6 +45,7 @@ public class UserController {
     public ResponseEntity<?> deleteUserById(@PathVariable(value = "id") Long userId, Authentication currentUser) {
         if (methodAccess(currentUser, userId)) {
             userService.deleteUserById(userId);
+            log.info("User with ID \"{}\" deleted", userId);
             return ResponseEntity.ok().build();
         } else return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
@@ -50,6 +54,7 @@ public class UserController {
     public ResponseEntity<?> updateUser(@PathVariable(value = "id") Long userId, @RequestBody User userNew, Authentication currentUser) {
         if (methodAccess(currentUser, userId)) {
             userService.updateUser(userId, userNew);
+            log.info("User with username \"{}\" updated", userNew.getUsername());
             return ResponseEntity.ok().build();
         } else return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
