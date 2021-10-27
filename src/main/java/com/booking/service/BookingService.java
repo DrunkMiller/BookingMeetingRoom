@@ -100,7 +100,7 @@ public class BookingService {
     private void checkSuitableEvent(TypeEvent typeEvent, MeetingRoom meetingRoom) {
         boolean result = meetingRoom.getTypeEventSet().contains(typeEvent);
         if (!result) {
-            throw new MeetingRoomNotBookedException("It is not possible to hold a '" + typeEvent + "' event in room " + meetingRoom.getTitle() + ".");
+            throw new MeetingRoomNotBookedException("It is not possible to hold a '" + typeEvent.getType() + "' event in room " + meetingRoom.getTitle() + ".");
         }
     }
 
