@@ -2,17 +2,16 @@ package com.booking.service;
 
 import com.booking.advice.MeetingRoomNotBookedException;
 import com.booking.advice.ResourceNotFoundException;
+import com.booking.dto.BookingDto;
+import com.booking.mapper.Convertor;
 import com.booking.models.Booking;
 import com.booking.models.MeetingRoom;
 import com.booking.models.TypeEvent;
-import com.booking.models.User;
 import com.booking.repositories.BookingRepo;
 import com.booking.repositories.UserRepo;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,19 +21,21 @@ import java.util.List;
 @Service
 public class BookingService {
     private final BookingRepo bookingRepo;
-    private  final UserRepo userRepo;
+    private final UserRepo userRepo;
+    private Convertor convertor;
 
-    public BookingService(BookingRepo bookingRepo, UserRepo userRepo) {
+    public BookingService(BookingRepo bookingRepo, UserRepo userRepo, Convertor convertor) {
         this.bookingRepo = bookingRepo;
         this.userRepo = userRepo;
+        this.convertor = convertor;
     }
 
     public List<Booking> getBookingsFromPreviousDay() {
         return bookingRepo.findBookingByStartTimeAfterOrderByStartTime(LocalDateTime.now().minusDays(1), PageRequest.of(0, 2));
     }
 
-    public Booking getBookingById(Long bookingId) {
-        return bookingRepo.findById(bookingId).orElseThrow(() -> new ResourceNotFoundException("Booking with ID " + bookingId + " doesn't exist."));
+    public BookingDto getBookingDtoById(Long bookingId) {
+        return convertor.convertToDto(getBookingById(bookingId), BookingDto.class);
     }
 
     public Booking createBooking(Booking booking, Authentication authentication) {
@@ -44,8 +45,9 @@ public class BookingService {
         }
         return booking;
     }
-    public Booking updateBooking(Long bookingId, Booking booking,  Authentication authentication) {
-        Booking bookingOld =getBookingById(bookingId);
+
+    public Booking updateBooking(Long bookingId, Booking booking, Authentication authentication) {
+        Booking bookingOld = getBookingById(bookingId);
         if (bookingOld.getEmployee().getUsername().equals(authentication.getName())) {
             bookingOld.setTitle(booking.getTitle());
             bookingOld.setEmployee(userRepo.findByUsername(authentication.getName()));
@@ -56,20 +58,23 @@ public class BookingService {
             if (allChecks(bookingOld)) {
                 bookingRepo.save(bookingOld);
             }
-        }
-        else throw new AccessDeniedException("You cannot change this booking.");
+        } else throw new AccessDeniedException("You cannot change this booking.");
         return bookingOld;
     }
 
     public void deleteBookingById(Long bookingId, Authentication authentication) {
-        boolean hasRoleAdmin =authentication.getAuthorities().stream().anyMatch(s -> s.getAuthority().equals("ROLE_ADMIN"));
+        boolean hasRoleAdmin = authentication.getAuthorities().stream().anyMatch(s -> s.getAuthority().equals("ROLE_ADMIN"));
         Booking booking = getBookingById(bookingId);
         if (booking.getEmployee().getUsername().equals(authentication.getName()) || hasRoleAdmin) {
             bookingRepo.delete(booking);
-            }
-        else throw new AccessDeniedException("You cannot change this booking.");
+        } else throw new AccessDeniedException("You cannot change this booking.");
     }
 
+    private Booking getBookingById(Long bookingId) {
+        return bookingRepo.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking with ID " + bookingId + " doesn't exist."));
+
+    }
 
     private boolean allChecks(Booking booking) {
         isMeetingRoomWorking(booking.getMeetingRoom());//работает ли комната

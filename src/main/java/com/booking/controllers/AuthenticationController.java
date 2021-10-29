@@ -1,6 +1,6 @@
 package com.booking.controllers;
 
-import com.booking.dto.AuthenticationRequestDto;
+import com.booking.dto.AuthenticationUserDto;
 import com.booking.dto.AuthenticationUserTokenDto;
 import com.booking.models.User;
 import com.booking.security.jwt.JwtTokenProvider;
@@ -31,7 +31,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("")
-    public ResponseEntity<AuthenticationUserTokenDto> login(@RequestBody AuthenticationRequestDto requestDto) {
+    public ResponseEntity<AuthenticationUserTokenDto> login(@RequestBody AuthenticationUserDto requestDto) {
         String username = requestDto.getUsername();
         log.info("The user with the login \"{}\" starts authentication.", requestDto.getUsername());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(

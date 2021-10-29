@@ -2,44 +2,53 @@ package com.booking.service;
 
 import com.booking.advice.MeetingRoomNotBookedException;
 import com.booking.advice.ResourceNotFoundException;
+import com.booking.dto.MeetingRoomDto;
+import com.booking.dto.TypeEventDto;
+import com.booking.mapper.Convertor;
 import com.booking.models.MeetingRoom;
+import com.booking.models.TypeEvent;
 import com.booking.repositories.MeetingRoomRepo;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MeetingRoomService {
 
     private final MeetingRoomRepo meetingRoomRepo;
+    private final Convertor convertor;
 
-    public MeetingRoomService(MeetingRoomRepo meetingRoomRepo) {
+    public MeetingRoomService(MeetingRoomRepo meetingRoomRepo , Convertor typeEventConvertor) {
         this.meetingRoomRepo = meetingRoomRepo;
+        this.convertor = typeEventConvertor;
     }
 
-    public List<MeetingRoom> getAllMeetingRoom() {
-        return meetingRoomRepo.findAll();
+    public List<MeetingRoomDto> getAllMeetingRoom() {
+        List<MeetingRoom> meetingRooms = meetingRoomRepo.findAll();
+        return meetingRooms.stream()
+                .map(room -> convertor.convertToDto(room, MeetingRoomDto.class))
+                .collect(Collectors.toList());
     }
 
-    public MeetingRoom getMeetingRoomById(Long meetingRoomId) {
-        return meetingRoomRepo.findById(meetingRoomId)
-                .orElseThrow(() -> new ResourceNotFoundException("Meeting room with ID number " + meetingRoomId + " does not exist"));
+    public MeetingRoomDto getMeetingRoomDtoById(Long meetingRoomId) {
+        return convertor.convertToDto(getMeetingRoomById(meetingRoomId), MeetingRoomDto.class);
     }
 
-    public void createMeetingRoom(MeetingRoom meetingRoom) {
+    public MeetingRoomDto createMeetingRoom(MeetingRoom meetingRoom) {
         checkStartBeforeAfter(meetingRoom.getWorkTimeWith(), meetingRoom.getWorkTimeBy());
         meetingRoomRepo.save(meetingRoom);
+        return convertor.convertToDto(meetingRoom, MeetingRoomDto.class);
     }
 
     public void deleteMeetingRoomById(Long meetingRoomId) {
         MeetingRoom meetingRoom = getMeetingRoomById(meetingRoomId);
         meetingRoomRepo.delete(meetingRoom);
-
     }
 
 
-    public MeetingRoom updateMeetingRoom(Long meetingRoomId, MeetingRoom meetingRoom) {
+    public MeetingRoomDto updateMeetingRoom(Long meetingRoomId, MeetingRoom meetingRoom) {
         MeetingRoom meetingRoomOld = meetingRoomRepo.findById(meetingRoomId)
                 .orElseThrow(() -> new ResourceNotFoundException("Meeting room with ID number " + meetingRoomId + " does not exist"));
         checkStartBeforeAfter(meetingRoom.getWorkTimeWith(), meetingRoom.getWorkTimeBy());
@@ -52,8 +61,13 @@ public class MeetingRoomService {
         meetingRoomOld.setWorking(meetingRoom.isWorking());
         meetingRoomOld.setTypeEventSet(meetingRoom.getTypeEventSet());
         meetingRoomRepo.save(meetingRoomOld);
-        return meetingRoomOld;
+        return convertor.convertToDto(meetingRoomOld, MeetingRoomDto.class);
 
+    }
+
+    private MeetingRoom getMeetingRoomById(Long meetingRoomId) {
+        return meetingRoomRepo.findById(meetingRoomId)
+                .orElseThrow(() -> new ResourceNotFoundException("Meeting room with ID number " + meetingRoomId + " does not exist"));
     }
 
     private void checkStartBeforeAfter(LocalTime startTime, LocalTime finishTime) {

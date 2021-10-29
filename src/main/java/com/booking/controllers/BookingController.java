@@ -1,5 +1,6 @@
 package com.booking.controllers;
 
+import com.booking.dto.BookingDto;
 import com.booking.models.Booking;
 import com.booking.service.BookingService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +28,8 @@ public class BookingController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Booking> getBookingById(@PathVariable(value = "id") Long bookingId) {
-        return ResponseEntity.ok().body(bookingService.getBookingById(bookingId));
+    public ResponseEntity<BookingDto> getBookingById(@PathVariable(value = "id") Long bookingId) {
+        return ResponseEntity.ok().body(bookingService.getBookingDtoById(bookingId));
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_LECTOR"})

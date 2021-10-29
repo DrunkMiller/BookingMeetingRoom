@@ -1,5 +1,6 @@
 package com.booking.controllers;
 
+import com.booking.dto.MeetingRoomDto;
 import com.booking.models.MeetingRoom;
 import com.booking.service.MeetingRoomService;
 import org.springframework.http.HttpStatus;
@@ -20,22 +21,22 @@ public class MeetingRoomController {
     }
 
     @GetMapping()
-    public List<MeetingRoom> getAllMeetingRoom() {
+    public List<MeetingRoomDto> getAllMeetingRoom() {
         return meetingRoomService.getAllMeetingRoom();
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<MeetingRoom> getMeetingRoomById(@PathVariable(value = "id") Long meetingRoomId) {
-        MeetingRoom meetingRoom = meetingRoomService.getMeetingRoomById(meetingRoomId);
+    public ResponseEntity<MeetingRoomDto> getMeetingRoomById(@PathVariable(value = "id") Long meetingRoomId) {
+        MeetingRoomDto meetingRoom = meetingRoomService.getMeetingRoomDtoById(meetingRoomId);
         return ResponseEntity.ok().body(meetingRoom);
     }
 
     @Secured("ROLE_ADMIN")
     @PostMapping("/meet_room")
-    public ResponseEntity<MeetingRoom> createMeetingRoom(@RequestBody MeetingRoom meetingRoom) {
-        meetingRoomService.createMeetingRoom(meetingRoom);
-        return ResponseEntity.status(HttpStatus.CREATED).body(meetingRoom);
+    public ResponseEntity<MeetingRoomDto> createMeetingRoom(@RequestBody MeetingRoom meetingRoom) {
+        MeetingRoomDto roomDto = meetingRoomService.createMeetingRoom(meetingRoom);
+        return ResponseEntity.status(HttpStatus.CREATED).body(roomDto);
     }
 
     @Secured("ROLE_ADMIN")
@@ -47,9 +48,9 @@ public class MeetingRoomController {
 
     @Secured("ROLE_ADMIN")
     @PutMapping("{id}")
-    public ResponseEntity<MeetingRoom> updateMeetingRoom(@PathVariable(value = "id") Long meetingRoomId,
+    public ResponseEntity<MeetingRoomDto> updateMeetingRoom(@PathVariable(value = "id") Long meetingRoomId,
                                                          @RequestBody MeetingRoom meetingRoom) {
-        MeetingRoom updateRoom = meetingRoomService.updateMeetingRoom(meetingRoomId, meetingRoom);
+        MeetingRoomDto updateRoom = meetingRoomService.updateMeetingRoom(meetingRoomId, meetingRoom);
         return ResponseEntity.ok().body(updateRoom);
     }
 

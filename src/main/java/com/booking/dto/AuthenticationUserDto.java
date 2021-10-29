@@ -3,7 +3,7 @@ package com.booking.dto;
 import lombok.Data;
 
 @Data
-public class AuthenticationRequestDto {
+public class AuthenticationUserDto {
     private String username;
     private String password;
 }
