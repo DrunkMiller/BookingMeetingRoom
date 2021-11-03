@@ -1,6 +1,5 @@
 package com.booking.dto;
 
-import com.booking.models.TypeEvent;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 

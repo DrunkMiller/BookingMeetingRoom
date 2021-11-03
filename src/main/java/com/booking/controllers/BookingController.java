@@ -23,8 +23,13 @@ public class BookingController {
     }
 
     @GetMapping("")
-    public List<Booking> viewBooking() {
+    public List<BookingDto> viewBooking() {
         return bookingService.getBookingsFromPreviousDay();
+    }
+
+    @GetMapping("my_booking")
+    public List<BookingDto> viewBookingAuthenticationUser(Authentication authentication) {
+        return bookingService.getBookingAuthenticationUser(authentication);
     }
 
     @GetMapping("/{id}")
@@ -34,18 +39,18 @@ public class BookingController {
 
     @Secured({"ROLE_ADMIN", "ROLE_LECTOR"})
     @PostMapping("/booking")
-    public ResponseEntity<Booking> createBooking(@RequestBody Booking booking, Authentication authentication) {
-        Booking newBooking = bookingService.createBooking(booking, authentication);
-        log.info("Booking was created in a {} room on {}",booking.getMeetingRoom().getTitle(), booking.getStartTime().toLocalDate());
-        return ResponseEntity.status(HttpStatus.CREATED).body(newBooking);
+    public ResponseEntity<BookingDto> createBooking(@RequestBody Booking booking, Authentication authentication) {
+        BookingDto newBookingDto = bookingService.createBooking(booking, authentication);
+        log.info("Booking was created in a {} room on {}", booking.getMeetingRoom().getTitle(), booking.getStartTime().toLocalDate());
+        return ResponseEntity.status(HttpStatus.CREATED).body(newBookingDto);
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_LECTOR"})
     @PutMapping("/{id}")
-    public ResponseEntity<Booking> updateBooking(@PathVariable(value = "id") Long bookingId, @RequestBody Booking booking, Authentication authentication) {
-        Booking newBooking =bookingService.updateBooking(bookingId, booking,authentication);
-        log.info("Booking was updated in a {} room on {}",booking.getMeetingRoom().getTitle(), booking.getStartTime().toLocalDate());
-        return ResponseEntity.ok().body(newBooking);
+    public ResponseEntity<BookingDto> updateBooking(@PathVariable(value = "id") Long bookingId, @RequestBody Booking booking, Authentication authentication) {
+        BookingDto newBookingDto = bookingService.updateBooking(bookingId, booking, authentication);
+        log.info("Booking was updated in a {} room on {}", booking.getMeetingRoom().getTitle(), booking.getStartTime().toLocalDate());
+        return ResponseEntity.ok().body(newBookingDto);
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_LECTOR"})

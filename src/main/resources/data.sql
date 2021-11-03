@@ -72,7 +72,6 @@ VALUES (1, 'Big meeting room', TRUE, 8, 'Tokio', '21:00','09:00', TRUE),
 
 
 INSERT INTO MEETING_TYPE(MEETING_ROOM_ID,
-
                          TYPE_EVENT_ID)
 VALUES (1, 1),
        (1,2),
@@ -81,11 +80,13 @@ VALUES (1, 1),
 
 
 INSERT INTO BOOKING(ID,
+                    Booking_time,
                     FINISH_TIME,
                     START_TIME,
                     TITLE,
                     USER_ID,
                     MEETING_ROOM_ID,
-                    TYPE_EVENT_ID)
-VALUES (1, '2021-10-27T13:00:00', '2021-10-27T11:00:00','la-la-la', 3, 1, 1),
-       (2, '2021-10-27T17:00:00', '2021-10-27T13:00:00','la-la-la', 4, 2, 2)
+                    TYPE_EVENT_ID,
+                    DELETED)
+VALUES (1,'2021-10-27T12:00:00', '2021-10-27T13:00:00', '2021-10-27T11:00:00','la-la-la', 3, 1, 1, false ),
+       (2, '2021-10-27T11:00:00', '2021-10-27T17:00:00', '2021-10-27T13:00:00','la-la-la', 4, 2, 2, false );

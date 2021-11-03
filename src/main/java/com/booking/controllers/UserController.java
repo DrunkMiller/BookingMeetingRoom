@@ -1,5 +1,6 @@
 package com.booking.controllers;
 
+import com.booking.dto.UserDto;
 import com.booking.models.User;
 import com.booking.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,10 +36,10 @@ public class UserController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User userNew = userService.createUser(user);
-        log.info("User with username \"{}\" created", userNew.getUsername());
-        return ResponseEntity.status(HttpStatus.CREATED).body(userNew);
+    public ResponseEntity<UserDto> createUser(@RequestBody User user) {
+        UserDto userDto = userService.createUser(user);
+        log.info("User with username \"{}\" created", userDto.getUsername());
+        return ResponseEntity.status(HttpStatus.CREATED).body(userDto);
     }
 
     @DeleteMapping(value = "/{id}")

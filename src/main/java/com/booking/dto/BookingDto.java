@@ -13,7 +13,7 @@ public class BookingDto {
     private LocalDateTime startTime;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime finishTime;
-    private User employee;
+    private UserDto employee;
     private MeetingRoomDto meetingRoom;
     private TypeEventDto typeEvent;
 }

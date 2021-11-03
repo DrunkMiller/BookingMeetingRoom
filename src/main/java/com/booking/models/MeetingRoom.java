@@ -31,7 +31,7 @@ public class MeetingRoom {
     private LocalTime workTimeBy;
     private boolean working = true;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(name = "meeting_type", joinColumns = @JoinColumn(name = "meeting_room_id"),
             inverseJoinColumns = @JoinColumn(name = "type_event_id"))
     private Set<TypeEvent> typeEventSet;

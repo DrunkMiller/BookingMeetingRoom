@@ -2,8 +2,12 @@ package com.booking.service;
 
 import com.booking.advice.EntityAlreadyExistException;
 import com.booking.advice.ResourceNotFoundException;
+import com.booking.dto.UserDto;
+import com.booking.mapper.Convertor;
+import com.booking.models.Role;
 import com.booking.models.Status;
 import com.booking.models.User;
+import com.booking.repositories.RoleRepo;
 import com.booking.repositories.UserRepo;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,16 +16,21 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Validated
 public class UserService {
     private final UserRepo userRepo;
+    private final RoleRepo roleRepo;
     private final PasswordEncoder passwordEncoder;
+    private final Convertor convertor;
 
-    public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepo userRepo, RoleRepo roleRepo, PasswordEncoder passwordEncoder, Convertor convertor) {
         this.userRepo = userRepo;
+        this.roleRepo = roleRepo;
         this.passwordEncoder = passwordEncoder;
+        this.convertor = convertor;
     }
 
     public User getByUsername(String username) {
@@ -41,15 +50,22 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("An employee with ID " + userId + " not found"));
     }
 
-    public User createUser(@Valid User user) {
+    public UserDto createUser(@Valid User user) {
         if (hasUserByLogin(user.getUsername())) {
+            List<Role> roles = user.getRoles().stream()
+                    .map(role -> roleRepo.findByName(role.getName()))
+                    .collect(Collectors.toList());
+            System.out.println(roles);
+            roles.add(roleRepo.findByName("ROLE_USER"));
+            System.out.println(roles);
+            user.setRoles(roles);
             user.setCreated(LocalDate.now());
             user.setStatus(Status.ACTIVE);
             user.setUpdated(LocalDate.now());
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepo.save(user);
         }
-        return user;
+        return convertor.convertToDto(user, UserDto.class);
     }
 
     public void updateUser(Long userId, @Valid User userNew) {

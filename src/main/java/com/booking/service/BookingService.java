@@ -17,12 +17,13 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingService {
     private final BookingRepo bookingRepo;
     private final UserRepo userRepo;
-    private Convertor convertor;
+    private final Convertor convertor;
 
     public BookingService(BookingRepo bookingRepo, UserRepo userRepo, Convertor convertor) {
         this.bookingRepo = bookingRepo;
@@ -30,23 +31,33 @@ public class BookingService {
         this.convertor = convertor;
     }
 
-    public List<Booking> getBookingsFromPreviousDay() {
-        return bookingRepo.findBookingByStartTimeAfterOrderByStartTime(LocalDateTime.now().minusDays(1), PageRequest.of(0, 2));
+    public List<BookingDto> getBookingsFromPreviousDay() {
+        List<Booking> bookingList = bookingRepo.findBookingByStartTimeAfterOrderByStartTime(LocalDateTime.now().minusDays(1), PageRequest.of(0, 2));
+        return bookingList.stream()
+                .map(booking -> convertor.convertToDto(booking, BookingDto.class))
+                .collect(Collectors.toList());
+    }
+
+    public List<BookingDto> getBookingAuthenticationUser(Authentication authentication) {
+        List<Booking> bookingList = bookingRepo.getBookingSelectedUser(userRepo.findByUsername(authentication.getName()).getId());
+        return bookingList.stream()
+                .map(booking -> convertor.convertToDto(booking, BookingDto.class))
+                .collect(Collectors.toList());
     }
 
     public BookingDto getBookingDtoById(Long bookingId) {
         return convertor.convertToDto(getBookingById(bookingId), BookingDto.class);
     }
 
-    public Booking createBooking(Booking booking, Authentication authentication) {
+    public BookingDto createBooking(Booking booking, Authentication authentication) {
         if (allChecks(booking)) {
             booking.setEmployee(userRepo.findByUsername(authentication.getName()));
             bookingRepo.save(booking);
         }
-        return booking;
+        return convertor.convertToDto(booking, BookingDto.class);
     }
 
-    public Booking updateBooking(Long bookingId, Booking booking, Authentication authentication) {
+    public BookingDto updateBooking(Long bookingId, Booking booking, Authentication authentication) {
         Booking bookingOld = getBookingById(bookingId);
         if (bookingOld.getEmployee().getUsername().equals(authentication.getName())) {
             bookingOld.setTitle(booking.getTitle());
@@ -59,7 +70,7 @@ public class BookingService {
                 bookingRepo.save(bookingOld);
             }
         } else throw new AccessDeniedException("You cannot change this booking.");
-        return bookingOld;
+        return convertor.convertToDto(bookingOld, BookingDto.class);
     }
 
     public void deleteBookingById(Long bookingId, Authentication authentication) {
@@ -127,5 +138,4 @@ public class BookingService {
             throw new MeetingRoomNotBookedException("The time of booking is incorrect");
         }
     }
-
 }
