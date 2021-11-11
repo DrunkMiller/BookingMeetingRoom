@@ -5,7 +5,6 @@ import com.booking.advice.ResourceNotFoundException;
 import com.booking.dto.UserDto;
 import com.booking.mapper.Convertor;
 import com.booking.models.Role;
-import com.booking.models.Status;
 import com.booking.models.User;
 import com.booking.repositories.RoleRepo;
 import com.booking.repositories.UserRepo;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,13 +53,8 @@ public class UserService {
             List<Role> roles = user.getRoles().stream()
                     .map(role -> roleRepo.findByName(role.getName()))
                     .collect(Collectors.toList());
-            System.out.println(roles);
             roles.add(roleRepo.findByName("ROLE_USER"));
-            System.out.println(roles);
             user.setRoles(roles);
-            user.setCreated(LocalDate.now());
-            user.setStatus(Status.ACTIVE);
-            user.setUpdated(LocalDate.now());
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepo.save(user);
         }
@@ -71,7 +64,6 @@ public class UserService {
     public void updateUser(Long userId, @Valid User userNew) {
         User userOld = getUserById(userId);
         if (userOld.getUsername().equals(userNew.getUsername()) || hasUserByLogin(userNew.getUsername())) {
-            userOld.setUpdated(LocalDate.now());
             userOld.setFirstName(userNew.getFirstName());
             userOld.setLastName(userNew.getLastName());
             userOld.setUsername(userNew.getUsername());

@@ -1,6 +1,8 @@
 package com.booking.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -13,6 +15,8 @@ import java.util.List;
 @Table(name = "users")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class User extends BaseUserEntity {
     @NotNull(message = "Should not be null")
     @NotEmpty(message = "Should not be empty")

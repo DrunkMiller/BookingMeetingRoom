@@ -34,5 +34,18 @@ public class BaseUserEntity {
     @Column(name = "status")
     private Status status;
 
+    @PrePersist
+    public void onCreate() {
+        this.setCreated(LocalDate.now());
+        this.setStatus(Status.ACTIVE);
+        this.setUpdated(LocalDate.now());
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        this.setUpdated(LocalDate.now());
+    }
+
+
 }
 

@@ -1,8 +1,9 @@
 package com.booking.dto;
 
-import lombok.Data;
+import lombok.*;
 
 @Data
+@NoArgsConstructor
 public class TypeEventDto {
     private String type;
 

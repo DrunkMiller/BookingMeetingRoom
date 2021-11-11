@@ -29,7 +29,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable(value = "id") Long userId, Authentication currentUser) {
+    public ResponseEntity<User> getUserById(@PathVariable(value = "id") Long userId, Authentication currentUser) {
         if (methodAccess(currentUser, userId))
             return ResponseEntity.ok(userService.getUserById(userId));
         else return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
