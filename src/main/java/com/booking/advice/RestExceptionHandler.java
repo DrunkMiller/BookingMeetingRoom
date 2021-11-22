@@ -33,7 +33,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({MeetingRoomNotBookedException.class})
     protected ResponseEntity<Object> handleMeetingRoomNotWorking(RuntimeException ex) {
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Meeting room not booked.", ex.getMessage());
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Error while acting with room for booking.", ex.getMessage());
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 

@@ -1,6 +1,5 @@
 package com.booking.config;
 
-import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.convention.NameTokenizers;
@@ -24,4 +23,5 @@ public class ApplicationConfig {
                 .setSkipNullEnabled(true);
         return mapper;
     }
+
 }

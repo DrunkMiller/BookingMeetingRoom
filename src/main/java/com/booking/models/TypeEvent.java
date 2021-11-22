@@ -1,9 +1,9 @@
 package com.booking.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -12,14 +12,18 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
+@ApiModel
 public class TypeEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @ApiModelProperty(value = "Type event",required = true)
     private String type;
-    @ManyToMany(mappedBy = "typeEventSet")
     @JsonIgnore
+    @ManyToMany(mappedBy = "typeEventSet")
+    @ApiModelProperty(hidden = true)
     private Set<MeetingRoom> meetingRoomSet;
 
     @Override
@@ -33,5 +37,14 @@ public class TypeEvent {
     @Override
     public int hashCode() {
         return Objects.hash(id, type, meetingRoomSet);
+    }
+
+    @Override
+    public String toString() {
+        return "TypeEvent{" +
+                "id=" + id +
+                ", type='" + type + '\'' +
+                ", meetingRoomSet=" + meetingRoomSet +
+                '}';
     }
 }

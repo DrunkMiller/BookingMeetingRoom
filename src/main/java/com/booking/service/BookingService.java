@@ -8,11 +8,12 @@ import com.booking.models.Booking;
 import com.booking.models.MeetingRoom;
 import com.booking.models.TypeEvent;
 import com.booking.repositories.BookingRepo;
-import com.booking.repositories.UserRepo;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -22,12 +23,20 @@ import java.util.stream.Collectors;
 @Service
 public class BookingService {
     private final BookingRepo bookingRepo;
-    private final UserRepo userRepo;
+    private final UserService userService;
     private final Convertor convertor;
+    private final TypeEventService typeEventService;
+    private final MeetingRoomService meetingRoomService;
 
-    public BookingService(BookingRepo bookingRepo, UserRepo userRepo, Convertor convertor) {
+    public BookingService(BookingRepo bookingRepo,
+                          UserService userService,
+                          Convertor convertor,
+                          TypeEventService typeEventService,
+                          MeetingRoomService meetingRoomService) {
         this.bookingRepo = bookingRepo;
-        this.userRepo = userRepo;
+        this.userService = userService;
+        this.typeEventService = typeEventService;
+        this.meetingRoomService = meetingRoomService;
         this.convertor = convertor;
     }
 
@@ -39,7 +48,7 @@ public class BookingService {
     }
 
     public List<BookingDto> getBookingAuthenticationUser(Authentication authentication) {
-        List<Booking> bookingList = bookingRepo.getBookingSelectedUser(userRepo.findByUsername(authentication.getName()).getId());
+        List<Booking> bookingList = bookingRepo.getBookingSelectedUser(userService.getByUsername(authentication.getName()).getId());
         return bookingList.stream()
                 .map(booking -> convertor.convertToDto(booking, BookingDto.class))
                 .collect(Collectors.toList());
@@ -49,23 +58,26 @@ public class BookingService {
         return convertor.convertToDto(getBookingById(bookingId), BookingDto.class);
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public BookingDto createBooking(Booking booking, Authentication authentication) {
+        booking.setTypeEvent(typeEventService.getByID(booking.getTypeEvent().getId()));
+        booking.setMeetingRoom(meetingRoomService.getMeetingRoomById(booking.getMeetingRoom().getId()));
+        booking.setEmployee(userService.getByUsername(authentication.getName()));
         if (allChecks(booking)) {
-            booking.setEmployee(userRepo.findByUsername(authentication.getName()));
-            bookingRepo.save(booking);
+            bookingRepo.saveAndFlush(booking);
         }
         return convertor.convertToDto(booking, BookingDto.class);
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public BookingDto updateBooking(Long bookingId, Booking booking, Authentication authentication) {
         Booking bookingOld = getBookingById(bookingId);
         if (bookingOld.getEmployee().getUsername().equals(authentication.getName())) {
             bookingOld.setTitle(booking.getTitle());
-            bookingOld.setEmployee(userRepo.findByUsername(authentication.getName()));
             bookingOld.setStartTime(booking.getStartTime());
             bookingOld.setFinishTime(booking.getFinishTime());
-            bookingOld.setMeetingRoom(booking.getMeetingRoom());
-            bookingOld.setTypeEvent(booking.getTypeEvent());
+            bookingOld.setMeetingRoom(meetingRoomService.getMeetingRoomById(booking.getMeetingRoom().getId()));
+            bookingOld.setTypeEvent(typeEventService.getByID(booking.getTypeEvent().getId()));
             if (allChecks(bookingOld)) {
                 bookingRepo.save(bookingOld);
             }
@@ -73,6 +85,7 @@ public class BookingService {
         return convertor.convertToDto(bookingOld, BookingDto.class);
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void deleteBookingById(Long bookingId, Authentication authentication) {
         boolean hasRoleAdmin = authentication.getAuthorities().stream().anyMatch(s -> s.getAuthority().equals("ROLE_ADMIN"));
         Booking booking = getBookingById(bookingId);
@@ -90,9 +103,9 @@ public class BookingService {
     private boolean allChecks(Booking booking) {
         isMeetingRoomWorking(booking.getMeetingRoom());//работает ли комната
         checkTimeIsItWorkingTime(booking.getMeetingRoom(), booking.getStartTime(), booking.getFinishTime()); //рабочее ли время комнаты выбрано
-        checkSuitableEvent(booking.getTypeEvent(), booking.getMeetingRoom()); // можно ты проводить выбранное событие в этой выбранной комнате
+        checkSuitableEvent(booking.getTypeEvent(), booking.getMeetingRoom()); // можно ли проводить выбранное событие в этой выбранной комнате
         checkStartBeforeAfter(booking.getStartTime(), booking.getFinishTime());
-        checkRoomIsFreeInSelectedTime(booking.getId(), booking.getStartTime(), booking.getFinishTime());
+        checkRoomIsFreeInSelectedTime(booking);
         return true;
     }
 
@@ -120,13 +133,13 @@ public class BookingService {
         }
     }
 
-    private void checkRoomIsFreeInSelectedTime(Long bookingId, LocalDateTime startTimeReserve, LocalDateTime finishTimeReserve) {
-        LocalDateTime startOfDay = startTimeReserve.toLocalDate().atStartOfDay().minusDays(1);
-        LocalDateTime finishOfDay = startTimeReserve.toLocalDate().atStartOfDay().plusDays(1);
-        List<Booking> bookingList = bookingRepo.findBookingByStartTimeBetweenOrderByStartTime(startOfDay, finishOfDay);
-        bookingList.removeIf((booking) -> booking.getId().equals(bookingId));// удалять бронирование из списка найденных, для работы метода update, так как будет возникать конфликт самим с собой
-        for (Booking booking : bookingList) {
-            if (startTimeReserve.isBefore(booking.getFinishTime()) && finishTimeReserve.isAfter(booking.getStartTime())) {
+    private void checkRoomIsFreeInSelectedTime(Booking booking) {
+        LocalDateTime startOfDay = booking.getStartTime().toLocalDate().atStartOfDay().minusDays(1);
+        LocalDateTime finishOfDay = booking.getFinishTime().toLocalDate().atStartOfDay().plusDays(1);
+        List<Booking> bookingList = bookingRepo.findBookingByStartTimeBetweenAndMeetingRoomIdOrderByStartTime(startOfDay, finishOfDay, booking.getMeetingRoom().getId());
+        bookingList.removeIf((book) -> book.getId().equals(booking.getId()));// удалять бронирование из списка найденных, для работы метода update, так как будет возникать конфликт самим с собой
+        for (Booking book : bookingList) {
+            if (booking.getStartTime().isBefore(book.getFinishTime()) && booking.getFinishTime().isAfter(book.getStartTime())) {
                 throw new MeetingRoomNotBookedException("It is impossible to book for this time, because there was an " +
                         "overlap with another booking");
             }

@@ -7,8 +7,12 @@ import com.booking.mapper.Convertor;
 import com.booking.models.TypeEvent;
 import com.booking.repositories.TypeEventRepo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,19 +35,21 @@ public class TypeEventService {
         return convertor.convertToDto(getByID(eventId), TypeEventDto.class);
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public TypeEventDto createEvent(TypeEvent event) {
         TypeEvent typeEvent = typeEventRepo.findByType(event.getType());
         if (typeEvent == null) {
-            typeEventRepo.save(event);
-            return convertor.convertToDto(event, TypeEventDto.class);
+            return convertor.convertToDto(typeEventRepo.save(event), TypeEventDto.class);
         } else throw new EntityAlreadyExistException("Event type '" + event.getType() + "' already exists");
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void deleteTypeEventById(Long typeEventId) {
         TypeEvent typeEvent = getByID(typeEventId);
         typeEventRepo.delete(typeEvent);
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public TypeEventDto updateTypeEvent(Long typeEventId, TypeEvent typeEventDetails) {
         TypeEvent typeEvent = getByID(typeEventId);
         TypeEvent typeEventDB = typeEventRepo.findByType(typeEventDetails.getType());
@@ -55,7 +61,12 @@ public class TypeEventService {
         return convertor.convertToDto(typeEvent, TypeEventDto.class);
     }
 
-    private TypeEvent getByID(Long eventId) {
+    protected Set<TypeEvent> getAllTypeEventById(Set<Long> listId) {
+        List<TypeEvent> typeEventList = typeEventRepo.findAllById(listId);
+        return new HashSet<>(typeEventList);
+    }
+
+    protected TypeEvent getByID(Long eventId) {
         return typeEventRepo.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Type event with ID number '" + eventId + "' does not exist"));
     }

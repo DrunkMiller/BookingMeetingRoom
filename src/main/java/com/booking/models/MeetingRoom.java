@@ -36,5 +36,4 @@ public class MeetingRoom {
             inverseJoinColumns = @JoinColumn(name = "type_event_id"))
     private Set<TypeEvent> typeEventSet;
 
-
 }

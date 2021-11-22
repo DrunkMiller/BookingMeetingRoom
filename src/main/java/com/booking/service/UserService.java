@@ -10,9 +10,12 @@ import com.booking.repositories.RoleRepo;
 import com.booking.repositories.UserRepo;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,20 +50,23 @@ public class UserService {
         return userRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("An employee with ID " + userId + " not found"));
     }
-
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public UserDto createUser(@Valid User user) {
         if (hasUserByLogin(user.getUsername())) {
             List<Role> roles = user.getRoles().stream()
                     .map(role -> roleRepo.findByName(role.getName()))
                     .collect(Collectors.toList());
             roles.add(roleRepo.findByName("ROLE_USER"));
+            if (roles.contains(roleRepo.findByName("ROLE_ADMIN"))){
+                throw new EntityAlreadyExistException("Can't create a user with admin rights");
+            }
             user.setRoles(roles);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            userRepo.save(user);
+            userRepo.saveAndFlush(user);
         }
         return convertor.convertToDto(user, UserDto.class);
     }
-
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void updateUser(Long userId, @Valid User userNew) {
         User userOld = getUserById(userId);
         if (userOld.getUsername().equals(userNew.getUsername()) || hasUserByLogin(userNew.getUsername())) {
@@ -72,7 +78,7 @@ public class UserService {
             userRepo.save(userOld);
         }
     }
-
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void deleteUserById(Long userId) {
         User user = getUserById(userId);
         userRepo.delete(user);

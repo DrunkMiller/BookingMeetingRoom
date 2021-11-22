@@ -8,6 +8,7 @@ import java.util.Set;
 
 @Data
 public class MeetingRoomDto {
+    private Long id;
     private String title;
     private String description;
     private Integer numberOfSeats;

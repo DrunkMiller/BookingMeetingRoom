@@ -13,5 +13,5 @@ public interface BookingRepo extends JpaRepository<Booking, Long>, BookingReposi
 
     List<Booking> findBookingByBookingTimeBetween(LocalDateTime startDay, LocalDateTime finishDay);
 
-    List<Booking> findBookingByStartTimeBetweenOrderByStartTime(LocalDateTime startDay, LocalDateTime finishDay);
+    List<Booking> findBookingByStartTimeBetweenAndMeetingRoomIdOrderByStartTime(LocalDateTime startDay, LocalDateTime finishDay, Long meetRoomId);
 }

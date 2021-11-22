@@ -26,29 +26,26 @@ public class ScheduledTasks {
         this.meetingRoomRepo = meetingRoomRepo;
     }
 
-    @Scheduled(fixedRateString = "${fixedDelay.in.milliseconds}", initialDelayString ="${initialDelay.in.milliseconds}" )
+    @Scheduled(fixedRateString = "${fixedDelay.in.milliseconds}", initialDelayString = "${initialDelay.in.milliseconds}")
     public void reportNumberOfBooking() {
-
         try {
             LocalDateTime nowTime = LocalDateTime.now();
-            List<Booking> bookingList =bookingRepo.findBookingByBookingTimeBetween(nowTime.minusHours(1), nowTime);
+            List<Booking> bookingList = bookingRepo.findBookingByBookingTimeBetween(nowTime.minusHours(1), nowTime);
             List<MeetingRoom> meetingRoomList = meetingRoomRepo.findAll();
-            Map<MeetingRoom , Long> roomIntegerMap = new HashMap<>();
-            for (MeetingRoom meetingRoom: meetingRoomList){
+            Map<MeetingRoom, Long> roomIntegerMap = new HashMap<>();
+            for (MeetingRoom meetingRoom : meetingRoomList) {
                 roomIntegerMap.put(meetingRoom, bookingList.stream().filter(booking -> booking
-                        .getMeetingRoom().getId().equals(meetingRoom.getId()))
+                                .getMeetingRoom().getId().equals(meetingRoom.getId()))
                         .count());
             }
             log.info("=====================");
             log.info("Number of new bookings in the last hour - " + bookingList.size());
-            for (MeetingRoom meetingRoom:roomIntegerMap.keySet()){
+            for (MeetingRoom meetingRoom : roomIntegerMap.keySet()) {
                 log.info("Meeting room '" + meetingRoom.getTitle() + "' bookings in the past hour equals " + roomIntegerMap.get(meetingRoom));
             }
-        }
-        catch (NullPointerException e){
+        } catch (NullPointerException e) {
             log.info("There were no reservations for the last hour.");
-        }
-        finally {
+        } finally {
             log.info("==============================");
         }
     }

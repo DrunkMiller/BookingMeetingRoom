@@ -15,7 +15,6 @@ import java.util.List;
 public class TypeEventController {
     private final TypeEventService typeEventService;
 
-
     public TypeEventController(TypeEventService typeEventService) {
         this.typeEventService = typeEventService;
     }
@@ -33,8 +32,7 @@ public class TypeEventController {
     @PostMapping("/type")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<TypeEventDto> createEvent(@RequestBody TypeEvent event) {
-        TypeEventDto typeEventDto = typeEventService.createEvent(event);
-        return ResponseEntity.status(HttpStatus.CREATED).body(typeEventDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(typeEventService.createEvent(event));
     }
 
     @DeleteMapping("{id}")
@@ -47,9 +45,8 @@ public class TypeEventController {
     @PutMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<TypeEventDto> updateTypeEvent(@PathVariable(value = "id") Long typeEventId,
-                                                     @RequestBody TypeEvent typeEventDetails) {
-        TypeEventDto updateEvent = typeEventService.updateTypeEvent(typeEventId, typeEventDetails);
-        return ResponseEntity.ok(updateEvent);
+                                                        @RequestBody TypeEvent typeEventDetails) {
+        return ResponseEntity.ok(typeEventService.updateTypeEvent(typeEventId, typeEventDetails));
     }
 
 
