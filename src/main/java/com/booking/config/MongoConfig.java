@@ -15,11 +15,14 @@ import java.util.Objects;
 @Configuration
 public class MongoConfig {
 
-    @Autowired
-    private Environment env;
+    private final Environment env;
+
+    public MongoConfig(Environment env) {
+        this.env = env;
+    }
 
     @Bean
-    public MongoClient mongoClient(){
+    public MongoClient mongoClient() {
         ConnectionString connectionString = new ConnectionString(Objects.requireNonNull(env.getProperty("spring.data.mongodb.uri")));
         MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
@@ -28,7 +31,7 @@ public class MongoConfig {
     }
 
     @Bean
-    public MongoTemplate mongoTemplate() throws Exception{
+    public MongoTemplate mongoTemplate() {
         return new MongoTemplate(mongoClient(), Objects.requireNonNull(env.getProperty("spring.data.mongodb.database")));
     }
 }
