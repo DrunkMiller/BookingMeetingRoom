@@ -1,4 +1,4 @@
-package com.booking.models;
+package com.booking.models.postgres;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

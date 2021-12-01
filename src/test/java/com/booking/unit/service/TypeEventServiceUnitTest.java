@@ -4,8 +4,8 @@
 //import com.booking.advice.ResourceNotFoundException;
 //import com.booking.dto.TypeEventDto;
 //import com.booking.mapper.Convertor;
-//import com.booking.models.TypeEvent;
-//import com.booking.repositories.TypeEventRepo;
+//import com.booking.models.postgres.TypeEvent;
+//import com.booking.repositories.postgres.TypeEventRepo;
 //import com.booking.service.TypeEventService;
 //import org.junit.jupiter.api.AfterEach;
 //import org.junit.jupiter.api.BeforeEach;

@@ -1,7 +1,7 @@
-package com.booking.repositories;
+package com.booking.repositories.postgres;
 
-import com.booking.models.Booking;
-import com.booking.repositories.bookingrepocustom.BookingRepositoriesCustom;
+import com.booking.models.postgres.Booking;
+import com.booking.repositories.postgres.bookingrepocustom.BookingRepositoriesCustom;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 

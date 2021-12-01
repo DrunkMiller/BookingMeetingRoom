@@ -1,7 +1,7 @@
 package com.booking.controllers;
 
 import com.booking.dto.MeetingRoomDto;
-import com.booking.models.MeetingRoom;
+import com.booking.models.postgres.MeetingRoom;
 import com.booking.service.MeetingRoomService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

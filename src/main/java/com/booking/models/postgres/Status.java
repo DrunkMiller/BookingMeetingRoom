@@ -1,4 +1,4 @@
-package com.booking.models;
+package com.booking.models.postgres;
 
 public enum Status {
     ACTIVE, NOT_ACTIVE, DELETED

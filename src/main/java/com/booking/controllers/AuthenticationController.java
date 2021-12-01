@@ -2,7 +2,7 @@ package com.booking.controllers;
 
 import com.booking.dto.AuthenticationUserDto;
 import com.booking.dto.AuthenticationUserTokenDto;
-import com.booking.models.User;
+import com.booking.models.postgres.User;
 import com.booking.security.jwt.JwtTokenProvider;
 import com.booking.service.UserService;
 import lombok.extern.slf4j.Slf4j;

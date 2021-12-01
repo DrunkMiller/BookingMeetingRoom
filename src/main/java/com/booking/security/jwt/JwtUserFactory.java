@@ -1,8 +1,8 @@
 package com.booking.security.jwt;
 
-import com.booking.models.Role;
-import com.booking.models.Status;
-import com.booking.models.User;
+import com.booking.models.postgres.Role;
+import com.booking.models.postgres.Status;
+import com.booking.models.postgres.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 

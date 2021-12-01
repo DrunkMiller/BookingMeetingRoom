@@ -5,10 +5,10 @@ import com.booking.dto.BookingDto;
 import com.booking.dto.MeetingRoomDto;
 import com.booking.dto.TypeEventDto;
 import com.booking.dto.UserDto;
-import com.booking.models.Booking;
-import com.booking.models.MeetingRoom;
-import com.booking.models.TypeEvent;
-import com.booking.models.User;
+import com.booking.models.postgres.Booking;
+import com.booking.models.postgres.MeetingRoom;
+import com.booking.models.postgres.TypeEvent;
+import com.booking.models.postgres.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 

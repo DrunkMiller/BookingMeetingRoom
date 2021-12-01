@@ -1,8 +1,8 @@
 //package com.booking.integration.controllers;
 //
 //import com.booking.advice.ResourceNotFoundException;
-//import com.booking.models.TypeEvent;
-//import com.booking.repositories.TypeEventRepo;
+//import com.booking.models.postgres.TypeEvent;
+//import com.booking.repositories.postgres.TypeEventRepo;
 //import com.fasterxml.jackson.databind.ObjectMapper;
 //import org.junit.jupiter.api.AfterEach;
 //import org.junit.jupiter.api.Test;

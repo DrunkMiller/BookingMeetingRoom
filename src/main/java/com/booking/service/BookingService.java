@@ -2,12 +2,13 @@ package com.booking.service;
 
 import com.booking.advice.MeetingRoomNotBookedException;
 import com.booking.advice.ResourceNotFoundException;
+import com.booking.aop.WriteBookingInMongo;
 import com.booking.dto.BookingDto;
 import com.booking.mapper.Convertor;
-import com.booking.models.Booking;
-import com.booking.models.MeetingRoom;
-import com.booking.models.TypeEvent;
-import com.booking.repositories.BookingRepo;
+import com.booking.models.postgres.Booking;
+import com.booking.models.postgres.MeetingRoom;
+import com.booking.models.postgres.TypeEvent;
+import com.booking.repositories.postgres.BookingRepo;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -59,6 +60,7 @@ public class BookingService {
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
+    @WriteBookingInMongo
     public BookingDto createBooking(Booking booking, Authentication authentication) {
         booking.setTypeEvent(typeEventService.getByID(booking.getTypeEvent().getId()));
         booking.setMeetingRoom(meetingRoomService.getMeetingRoomById(booking.getMeetingRoom().getId()));

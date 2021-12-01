@@ -1,4 +1,4 @@
-package com.booking.models;
+package com.booking.models.postgres;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;

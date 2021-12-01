@@ -1,6 +1,6 @@
 package com.booking.security;
 
-import com.booking.models.User;
+import com.booking.models.postgres.User;
 import com.booking.security.jwt.JwtUserFactory;
 import com.booking.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
