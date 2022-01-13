@@ -1,6 +1,6 @@
 package com.booking.security.jwt;
 
-import com.booking.models.postgres.Role;
+import com.booking.models.Role;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,32 +1,29 @@
 package com.booking.schedulingtasks;
 
-import com.booking.models.postgres.Booking;
-import com.booking.models.postgres.MeetingRoom;
-import com.booking.repositories.postgres.BookingRepo;
-import com.booking.repositories.mongodb.RoomReservationRepo;
-import com.booking.repositories.postgres.MeetingRoomRepo;
+import com.booking.models.Booking;
+import com.booking.models.MeetingRoom;
+import com.booking.repositories.BookingRepo;
+import com.booking.repositories.MeetingRoomRepo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Component
 @Slf4j
-@EnableMongoRepositories(basePackageClasses = RoomReservationRepo.class )
 public class ScheduledTasks {
 
     private final BookingRepo bookingRepo;
     private final MeetingRoomRepo meetingRoomRepo;
-    private final RoomReservationRepo createdBookingRepo;
 
-    public ScheduledTasks(BookingRepo bookingRepo, MeetingRoomRepo meetingRoomRepo, RoomReservationRepo createdBookingRepo) {
+    public ScheduledTasks(BookingRepo bookingRepo, MeetingRoomRepo meetingRoomRepo) {
         this.bookingRepo = bookingRepo;
         this.meetingRoomRepo = meetingRoomRepo;
-        this.createdBookingRepo = createdBookingRepo;
     }
 
     @Scheduled(fixedRateString = "${fixedDelay.in.milliseconds}", initialDelayString = "${initialDelay.in.milliseconds}")

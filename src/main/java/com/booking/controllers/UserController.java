@@ -1,7 +1,7 @@
 package com.booking.controllers;
 
 import com.booking.dto.UserDto;
-import com.booking.models.postgres.User;
+import com.booking.models.User;
 import com.booking.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

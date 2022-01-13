@@ -1,4 +1,4 @@
-package com.booking.models.postgres;
+package com.booking.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

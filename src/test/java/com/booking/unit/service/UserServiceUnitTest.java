@@ -2,9 +2,9 @@
 //
 //import com.booking.advice.EntityAlreadyExistException;
 //import com.booking.advice.ResourceNotFoundException;
-//import com.booking.models.postgres.Role;
-//import com.booking.models.postgres.User;
-//import com.booking.repositories.postgres.UserRepo;
+//import com.booking.models.Role;
+//import com.booking.models.User;
+//import com.booking.repositories.UserRepo;
 //import com.booking.service.UserService;
 //import org.junit.jupiter.api.AfterEach;
 //import org.junit.jupiter.api.BeforeEach;

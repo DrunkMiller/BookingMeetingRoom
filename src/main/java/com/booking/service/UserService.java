@@ -4,10 +4,10 @@ import com.booking.advice.EntityAlreadyExistException;
 import com.booking.advice.ResourceNotFoundException;
 import com.booking.dto.UserDto;
 import com.booking.mapper.Convertor;
-import com.booking.models.postgres.Role;
-import com.booking.models.postgres.User;
-import com.booking.repositories.postgres.RoleRepo;
-import com.booking.repositories.postgres.UserRepo;
+import com.booking.models.Role;
+import com.booking.models.User;
+import com.booking.repositories.RoleRepo;
+import com.booking.repositories.UserRepo;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 

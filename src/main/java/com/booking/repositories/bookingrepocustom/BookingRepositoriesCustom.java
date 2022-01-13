@@ -1,6 +1,6 @@
-package com.booking.repositories.postgres.bookingrepocustom;
+package com.booking.repositories.bookingrepocustom;
 
-import com.booking.models.postgres.Booking;
+import com.booking.models.Booking;
 
 import java.util.List;
 

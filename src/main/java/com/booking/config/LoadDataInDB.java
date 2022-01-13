@@ -1,7 +1,7 @@
 package com.booking.config;
 
-import com.booking.models.postgres.*;
-import com.booking.repositories.postgres.*;
+import com.booking.models.*;
+import com.booking.repositories.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.jdbc.core.JdbcTemplate;

@@ -1,7 +1,7 @@
 package com.booking.controllers;
 
 import com.booking.dto.TypeEventDto;
-import com.booking.models.postgres.TypeEvent;
+import com.booking.models.TypeEvent;
 import com.booking.service.TypeEventService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

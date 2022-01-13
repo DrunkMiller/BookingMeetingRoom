@@ -1,6 +1,6 @@
-package com.booking.repositories.postgres;
+package com.booking.repositories;
 
-import com.booking.models.postgres.TypeEvent;
+import com.booking.models.TypeEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
